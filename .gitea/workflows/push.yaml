@@ -1,0 +1,37 @@
+---
+
+name: Push
+
+
+on:
+  push:
+    branches:
+      - '*'
+
+
+env:
+  ACTIONS_RUNNER_DEBUG: "true"
+  ACTIONS_STEP_DEBUG: "true"
+
+
+jobs:
+
+
+  conventional-commits:
+    name: Conventional Commits
+    if: ${{ github.ref_name != 'master' && github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Trace
+        shell: bash
+        run: |
+          export
+
+      - name: Check Commits
+        uses: http://${{ secrets.ACTIONS_TOKEN_RO }}@gitea-http.git.svc:3000/actions/action-conventional-commits@v1.1.17
+        with:
+          token: ${{ secrets.ACTIONS_TOKEN_RO }}
+          skip_merge: true
+          skip_revert: true
+          types: "build|bump|chore|ci|docs|feat|fix|perf|refactor|revert|style|test"

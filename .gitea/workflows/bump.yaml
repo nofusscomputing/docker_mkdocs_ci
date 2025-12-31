@@ -1,0 +1,243 @@
+---
+
+name: 'Bump'
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      CZ_PRE_RELEASE:
+        default: none
+        required: false
+        description: Create Pre-Release {alpha,beta,rc,none}
+      CZ_INCREMENT:
+        default: none
+        required: false
+        description: Type of bump to conduct {MAJOR,MINOR,PATCH,none}
+  push:
+    branches:
+      - 'master'
+
+env:
+  # ACTIONS_RUNNER_DEBUG: "true"
+  # ACTIONS_STEP_DEBUG: "true"
+  GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+
+
+jobs:
+
+  bump:
+    name: 'Bump Version'
+    if: github.event.commits[0].author.name != 'nfc-bot'
+    runs-on: ubuntu-latest
+    outputs:
+      version-current: ${{ steps.version-current.outputs.value-out }}
+      version-new: ${{ steps.version-new.outputs.value-out }}
+    steps:
+
+
+      - name: Checkout Code - ${{ github.ref_name }} Branch
+        if: ${{ github.ref_name == 'master' }}
+        uses: http://${{ secrets.ACTIONS_TOKEN_RO }}@gitea-http.git.svc:3000/actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+          ref: development
+
+
+      - name: Checkout Code  - ${{ github.ref_name }} Branch
+        if: ${{ github.ref_name != 'master' }}
+        uses: http://${{ secrets.ACTIONS_TOKEN_RO }}@gitea-http.git.svc:3000/actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+          ref: ${{ github.ref_name }}
+
+
+      - name: Install Commitizen
+        shell: bash
+        run: |
+          pip install \
+            commitizen==3.28.0
+
+
+      - name: Fetch Current Version
+        id: version-current
+        run: |
+          echo "value-out=$(cz version --project)" >> $GITHUB_OUTPUT
+
+
+      - name: Increment version with .cz.yaml
+        shell: bash
+        run: |
+          if [ "${{ inputs.CZ_PRE_RELEASE }}" != 'none' ]; then
+
+            if [ "0${{ inputs.CZ_PRE_RELEASE }}" != '0' ]; then
+
+              echo "[debug] Pre-Release detected: ${{ inputs.CZ_PRE_RELEASE }}";
+
+              export pre_release="--prerelease ${{ inputs.CZ_PRE_RELEASE }}";
+
+            fi;
+
+          fi;
+
+          if [ "${{ inputs.CZ_INCREMENT }}" != 'none' ]; then
+
+            if [ "0${{ inputs.CZ_PRE_RELEASE }}" != '0' ]; then
+
+              echo "[debug] Pre-Release detected: ${{ inputs.CZ_INCREMENT }}";
+
+              export increment="--increment ${{ inputs.CZ_INCREMENT }}";
+
+            fi;
+
+          fi;
+
+          cz bump \
+            --files-only \
+            ${pre_release} \
+            ${increment} \
+            --yes;
+
+
+      - name: Fetch Current Version
+        id: version-new
+        run: |
+          echo "value-out=$(cz version --project)" >> $GITHUB_OUTPUT
+
+
+      - name: ls
+        if: ${{ github.ref_name != 'master' }}
+        shell: bash
+        run: |
+          ls -la
+
+
+      - name: Create Incremental Changelog
+        shell: bash
+        run: |
+          cz changelog --dry-run --merge-prerelease --incremental --unreleased-version "${{ steps.version-new.outputs.value-out }}" > changelog-release.md
+
+
+      - name: Update Changelog
+        shell: bash
+        run: |
+          cz changelog --unreleased-version "${{ steps.version-new.outputs.value-out }}"
+
+
+      - name: Upload Release Changelog
+        if: ${{ steps.version-new.outputs.value-out }}
+        uses: http://${{ secrets.ACTIONS_TOKEN_RO }}@gitea-http.git.svc:3000/actions/upload-artifact@v3
+        with:
+          name: changelog-release
+          path: changelog-release.md
+
+
+      - name: Create Release Changelog
+        if: ${{ steps.version-new.outputs.value-out }}
+        shell: bash
+        run: |
+          rm changelog-release.md;
+          git status;
+
+
+      - name: Run Additional Actions
+        if: ${{ steps.version-current.outputs.value-out != steps.version-new.outputs.value-out }}
+        shell: bash
+        run: |
+          echo 'run script';
+          if [ -f .github/additional_actions_bump.sh ]; then
+
+            echo "[Info] Set ENV vars for script's usage";
+
+            export CURRENT_VERSION=${{ steps.version-current.outputs.value-out }}
+
+            export NEW_VERSION=${{ steps.version-new.outputs.value-out }}
+
+            echo "[Info] ***************************************";
+
+            echo "[Debug]CURRENT_VERSION=${CURRENT_VERSION}";
+
+            echo "[Debug]NEW_VERSION=${NEW_VERSION}";
+
+            echo "[Info] ***************************************";
+
+            chmod +x .github/additional_actions_bump.sh
+
+            echo "[Debug] found additional action script .github/additional_actions_bump.sh";
+
+            echo "[Info] ***************************************";
+            echo "[Debug] cat .github/additional_actions_bump.sh";
+            echo "[Info] *************";
+
+            echo "[Debug] $(cat .github/additional_actions_bump.sh)";
+
+            echo "[Info] *************";
+            echo "[Info] ***************************************";
+
+            .github/additional_actions_bump.sh
+
+          fi
+
+
+      - name: Commit the changelog
+        if: ${{ steps.version-new.outputs.value-out && github.ref_name == 'master' }}
+        uses: http://${{ secrets.ACTIONS_TOKEN_RO }}@gitea-http.git.svc:3000/actions/git-auto-commit-action@v5
+        with:
+          commit_message: 'build: bump version ${{ steps.version-current.outputs.value-out }} -> ${{ steps.version-new.outputs.value-out }}'
+          branch: development
+          commit_user_name: nfc-bot
+          commit_user_email: helpdesk@nofusscomputing.com
+          commit_author: nfc-bot <helpdesk@nofusscomputing.com>
+          tagging_message: ${{ steps.version-new.outputs.value-out }}
+          skip_dirty_check: true
+          skip_fetch: true
+          skip_checkout: true
+          disable_globbing: true
+
+
+      - name: Commit the changelog
+        if: ${{ steps.version-new.outputs.value-out && github.ref_name != 'master'}}
+        uses: http://${{ secrets.ACTIONS_TOKEN_RO }}@gitea-http.git.svc:3000/actions/git-auto-commit-action@v5
+        with:
+          commit_message: 'build: bump version ${{ steps.version-current.outputs.value-out }} -> ${{ steps.version-new.outputs.value-out }}'
+          branch: ${{ github.ref_name }}
+          commit_user_name: nfc-bot
+          commit_user_email: helpdesk@nofusscomputing.com
+          commit_author: nfc-bot <helpdesk@nofusscomputing.com>
+          tagging_message: ${{ steps.version-new.outputs.value-out }}
+          skip_dirty_check: true
+          skip_fetch: true
+          skip_checkout: true
+          disable_globbing: true
+
+
+      - name: Configure git
+        shell: bash
+        run: |
+          git config --global user.email "helpdesk@nofusscomputing.com";
+          git config --global user.name "nfc-bot";
+
+
+      - name: Checkout master
+        if: ${{ github.ref_name == 'master' }}
+        shell: bash
+        run: |
+          git checkout master;
+
+
+      - name: Merge changes to master
+        if: ${{ github.ref_name == 'master' }}
+        shell: bash
+        run: |
+          git merge --no-ff development;
+
+
+      - name: Push changes
+        if: ${{ github.ref_name == 'master' }}
+        shell: bash
+        run: |
+          git push origin master;
