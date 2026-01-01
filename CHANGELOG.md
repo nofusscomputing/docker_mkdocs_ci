@@ -1,3 +1,9 @@
+## 0.2.0 (2026-01-01)
+
+### feat
+
+- Allow user to specify docs source
+
 ## 0.1.3 (2026-01-01)
 
 ### Fixes
