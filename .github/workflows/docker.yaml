@@ -42,7 +42,7 @@ jobs:
 
 
       - name: Log into GHCR Registry
-        uses: http://${{ secrets.ACTIONS_TOKEN_RO }}@gitea-http.git.svc:3000/actions/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
         with:
           registry: ${{ env.DOCKER_BUILD_REGISTRY }}
           username: ${{ env.DOCKER_BUILD_USERNAME }}
