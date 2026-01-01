@@ -9,12 +9,6 @@ on:
       - '*'
 
 
-env:
-  # ACTIONS_RUNNER_DEBUG: "true"
-  # ACTIONS_STEP_DEBUG: "true"
-  GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
-
-
 permissions:
   contents: write
 
