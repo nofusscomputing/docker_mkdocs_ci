@@ -1,0 +1,27 @@
+---
+
+name: Pull Requests
+
+
+on:
+  pull_request: {}
+
+
+jobs:
+
+
+  conventional-pr-title:
+    name: Conventional PR Title
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+
+
+      - name: Conventional Commit PR Title
+        uses: http://${{ secrets.ACTIONS_TOKEN_RO }}@gitea-http.git.svc:3000/actions/conventional-commit-checker-action@v1.0.0
+        with:
+          pr-title-regex: "^(.+)(?:(([^)s]+)))?: (.+)"
+          pr-body-regex: "(.*)"
+          GITHUB_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
+          token: ${{ secrets.WORKFLOW_TOKEN }}
