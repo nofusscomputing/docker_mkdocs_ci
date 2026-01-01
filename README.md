@@ -6,7 +6,7 @@
 
 <br>
 
-![GitHub forks](https://img.shields.io/github/forks/NofussComputing/2Fdocker_mkdocs_ci?logo=github&style=plastic&color=000000&labell=Forks) ![GitHub stars](https://img.shields.io/github/stars/NofussComputing/2Fdocker_mkdocs_ci?color=000000&logo=github&style=plastic) ![Github Watchers](https://img.shields.io/github/watchers/NofussComputing/2Fdocker_mkdocs_ci?color=000000&label=Watchers&logo=github&style=plastic)
+![GitHub forks](https://img.shields.io/github/forks/NofussComputing/docker_mkdocs_ci?logo=github&style=plastic&color=000000&labell=Forks) ![GitHub stars](https://img.shields.io/github/stars/NofussComputing/docker_mkdocs_ci?color=000000&logo=github&style=plastic) ![Github Watchers](https://img.shields.io/github/watchers/NofussComputing/docker_mkdocs_ci?color=000000&label=Watchers&logo=github&style=plastic)
 
 links:
 
