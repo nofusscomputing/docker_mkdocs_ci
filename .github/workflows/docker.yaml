@@ -52,23 +52,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-          image: harbor.earth.nww/docker/tonistiigi/binfmt:latest
-
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver-opts: |
-            image=harbor.earth.nww/docker/moby/buildkit:master
-          buildkitd-config-inline: |
-            [registry."harbor.earth.nww"]
-              ca=["/etc/docker/certs.d/harbor.earth.nww/ca.crt"]
-
-
-      - name: add ca cert
-        run: |
-          cp /etc/docker/certs.d/harbor.earth.nww/ca.crt /usr/local/share/ca-certificates/harbor.earth.nww.crt
-          update-ca-certificates
+          image: tonistiigi/binfmt:latest
 
 
       - name: Build and push
