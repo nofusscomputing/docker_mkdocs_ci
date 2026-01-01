@@ -47,6 +47,9 @@ RUN cd /tmp/python_modules; \
 FROM python:${PYTHON_VERSION}-alpine${ALPINE_VERSION}
 
 
+ENV MKDOCS_SRC_DIRECTORY='docs'
+
+
 COPY --from=build /tmp/python_builds /tmp/python_builds
 
 
