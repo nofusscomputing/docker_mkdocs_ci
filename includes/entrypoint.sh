@@ -107,7 +107,7 @@ merge_child() {
 
     # rm -rf ${HOME_DIR}/docs/${docs_path}/*;
 
-    cp -afr ${HOME_DIR}/artifacts/${child_repo_user}/${child_repo_name}/docs/${docs_path}/. ${HOME_DIR}/docs/${docs_path}/
+    cp -afr ${HOME_DIR}/artifacts/${child_repo_user}/${child_repo_name}/docs/${docs_path}/. ${HOME_DIR}/${MKDOCS_SRC_DIRECTORY}/${docs_path}/
 
     echo "Merge Child Docs: docs/${docs_path}/";
 
@@ -174,7 +174,7 @@ if [ -n "${IS_BUILD}" ]; then
 
     echo "Copy Source docs";
 
-    cp -a ${HOME_DIR}/docs/. ${HOME_DIR}/artifacts/source/;
+    cp -a ${HOME_DIR}/${MKDOCS_SRC_DIRECTORY}/. ${HOME_DIR}/artifacts/source/;
 
     fi
 
