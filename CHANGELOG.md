@@ -1,3 +1,9 @@
+## 0.3.0 (2026-01-02)
+
+### feat
+
+- Allow user to specify branch for cloning of sub-docs
+
 ## 0.2.0 (2026-01-01)
 
 ### feat
