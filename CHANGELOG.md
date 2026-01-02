@@ -1,3 +1,13 @@
+## 0.4.0 (2026-01-02)
+
+### feat
+
+- when adding sub-docs if gitlab group, replace path sep with `_`
+
+### Fixes
+
+- correct logic for branch/tag detection
+
 ## 0.3.1 (2026-01-02)
 
 ### Fixes
