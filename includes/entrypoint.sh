@@ -59,8 +59,10 @@ build_child() {
     echo "data: child_repo_host=${child_repo_host}";
     echo "data: child_repo_user=${child_repo_user}";
     echo "data: child_repo_name=${child_repo_name}";
+    echo "data: child_repo_name=[${child_repo_branch}]";
 
-    if [[ ${child_repo_branch+x} && -n $child_repo_branch ]]; then
+
+    if [ -n "${child_repo_branch}" ]; then
 
         CLONE_REF=${child_repo_branch}
 
@@ -74,9 +76,11 @@ build_child() {
 
     fi
 
-    git clone --branch "${CLONE_REF}" --depth=1 ${child_repo_host}/${child_repo_user}/${child_repo_name} ${HOME_DIR}/artifacts/${child_repo_user}/${child_repo_name};
+    git clone --branch "${CLONE_REF}" --depth=1 ${child_repo_host}/${child_repo_user}/${child_repo_name} ${HOME_DIR}/artifacts/$(printf '%s' "${child_repo_user}" | tr '/' '_')/${child_repo_name};
 
     echo "Finished cloning: ${CLONE_REF}";
+
+    child_repo_user=$(printf '%s' "${child_repo_user}" | tr '/' '_')
 
     cd ${HOME_DIR}/artifacts/${child_repo_user}/${child_repo_name};
 
