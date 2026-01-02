@@ -48,6 +48,7 @@ build_child() {
     child_repo_host="$1"
     child_repo_user="$2"
     child_repo_name="$3"
+    child_repo_branch="$4"
     # child_repo_host="$(printf '%s\n' "$1" | envsubst)"
     # child_repo_user="$(printf '%s\n' "$2" | envsubst)"
     # child_repo_name="$(printf '%s\n' "$3" | envsubst)"
@@ -59,13 +60,23 @@ build_child() {
     echo "data: child_repo_user=${child_repo_user}";
     echo "data: child_repo_name=${child_repo_name}";
 
-    LATEST_TAG=$(git ls-remote --tags --sort=-v:refname ${child_repo_host}/${child_repo_user}/${child_repo_name} | sed 's#.*/##' | grep -v '\^{}' | head -n 1)
+    if [[ -n ${child_repo_branch-} ]]; then
 
-    echo "Latest tag found: ${LATEST_TAG}";
+        CLONE_REF=${child_repo_branch}
 
-    git clone --branch "${LATEST_TAG}" --depth=1 ${child_repo_host}/${child_repo_user}/${child_repo_name} ${HOME_DIR}/artifacts/${child_repo_user}/${child_repo_name};
+        echo "Will Clone Branch: ${CLONE_REF}";
 
-    echo "Finished cloning: ${LATEST_TAG}";
+    else
+
+        CLONE_REF=$(git ls-remote --tags --sort=-v:refname ${child_repo_host}/${child_repo_user}/${child_repo_name} | sed 's#.*/##' | grep -v '\^{}' | head -n 1)
+
+        echo "Latest tag found: ${CLONE_REF}";
+
+    fi
+
+    git clone --branch "${CLONE_REF}" --depth=1 ${child_repo_host}/${child_repo_user}/${child_repo_name} ${HOME_DIR}/artifacts/${child_repo_user}/${child_repo_name};
+
+    echo "Finished cloning: ${CLONE_REF}";
 
     cd ${HOME_DIR}/artifacts/${child_repo_user}/${child_repo_name};
 
@@ -136,11 +147,13 @@ if [ -n "${IS_BUILD}" ]; then
             user=$(printf '%s\n' "$obj" | yq -r '.user' | envsubst)
             host=$(printf '%s\n' "$obj" | yq -r '.host' | envsubst)
             path=$(printf '%s\n' "$obj" | yq -r '.path' | envsubst)
+            branch=$(printf '%s\n' "$obj" | yq -r '.branch // ""' | envsubst)
 
             build_child \
                 ${host} \
                 ${user} \
-                ${name};
+                ${name} \
+                ${branch};
 
 
             merge_child \
