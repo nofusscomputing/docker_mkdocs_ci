@@ -1,3 +1,9 @@
+## 0.3.1 (2026-01-02)
+
+### Fixes
+
+- correct logic for branch/tag detection
+
 ## 0.3.0 (2026-01-02)
 
 ### feat
