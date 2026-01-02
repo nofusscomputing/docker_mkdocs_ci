@@ -60,7 +60,7 @@ build_child() {
     echo "data: child_repo_user=${child_repo_user}";
     echo "data: child_repo_name=${child_repo_name}";
 
-    if [[ -n ${child_repo_branch-} ]]; then
+    if [[ ${child_repo_branch+x} && -n $child_repo_branch ]]; then
 
         CLONE_REF=${child_repo_branch}
 
