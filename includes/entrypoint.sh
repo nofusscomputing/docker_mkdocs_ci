@@ -113,7 +113,7 @@ build_child() {
 merge_child() {
 
     docs_path="$1"
-    repo_user="$2"
+    repo_user="$(printf '%s' "$2" | tr '/' '_')"
     repo_name="$3"
 
     echo "Begin Merging Child: ${docs_path}";
@@ -122,11 +122,11 @@ merge_child() {
 
     # rm -rf ${HOME_DIR}/docs/${docs_path}/*;
 
-    cp -afr ${HOME_DIR}/artifacts/${child_repo_user}/${child_repo_name}/docs/${docs_path}/. ${HOME_DIR}/${MKDOCS_SRC_DIRECTORY}/${docs_path}/
+    cp -afr ${HOME_DIR}/artifacts/${repo_user}/${repo_name}/docs/${docs_path}/. ${HOME_DIR}/${MKDOCS_SRC_DIRECTORY}/${docs_path}/
 
     echo "Merge Child Docs: docs/${docs_path}/";
 
-    cp -afr ${HOME_DIR}/artifacts/${child_repo_user}_${child_repo_name}/${docs_path}/. ${HOME_DIR}/artifacts/pages/${docs_path}/;
+    cp -afr ${HOME_DIR}/artifacts/${repo_user}_${repo_name}/${docs_path}/. ${HOME_DIR}/artifacts/pages/${docs_path}/;
 
 }
 
