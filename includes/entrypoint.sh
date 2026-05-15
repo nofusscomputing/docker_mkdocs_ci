@@ -100,6 +100,16 @@ build_child() {
 
     echo "  Finished Build";
 
+    if [ -f "./.github/additional_actions_docs.sh" ]; then
+
+        chmod +x ./.github/additional_actions_docs.sh;
+
+        echo "  Running Additional Actions for docs";
+
+        ./.github/additional_actions_docs.sh;
+
+    fi;
+
     cd ${HOME_DIR};
 
     echo "Moving Build to Artifacts dir";
