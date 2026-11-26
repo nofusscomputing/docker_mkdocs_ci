@@ -29,7 +29,7 @@ jobs:
   bump:
     name: 'Bump Version'
     if: github.event.commits[0].author.name != 'nfc-bot'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       version-current: ${{ steps.version-current.outputs.value-out }}
       version-new: ${{ steps.version-new.outputs.value-out }}
