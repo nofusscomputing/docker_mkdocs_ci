@@ -146,6 +146,28 @@ if [ -n "${IS_BUILD}" ]; then
 
     echo "Commencing Building and Merging Docs";
 
+    echo '********************************* SoF Trace **************************************';
+
+    echo '* PWD ********************************';
+
+    echo "${PWD}";
+
+    echo '* ls -la ********************************';
+
+    ls -la;
+
+    echo '* ls -la docs_template ********************************';
+
+    ls -la docs_template || true;
+
+    echo '* ls -la website_template ********************************';
+
+    ls -la website_template || true;
+
+    echo '*********************************';
+
+    echo '********************************* EoF Trace **************************************';
+
     build "--strict";
 
     cp -a ${HOME_DIR}/build/. ${HOME_DIR}/artifacts/pages/;
