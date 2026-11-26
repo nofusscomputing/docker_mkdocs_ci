@@ -41,7 +41,7 @@ build() {
 
     echo "Build Docs with flags: ";
 
-    mkdocs build --clean ${flags};
+    mkdocs build -v --clean ${flags};
 }
 
 build_child() {
